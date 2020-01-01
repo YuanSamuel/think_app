@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:think_app/ImagePage.dart';
 import 'package:think_app/SettingsPage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as Path;
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -25,15 +27,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<File> images = new List<File>();
-
+  
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
         title: Text("Gallery"),
@@ -205,7 +201,9 @@ class _HomePageState extends State<HomePage> {
 
   Future getImageFromGallery() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-
+    if (image != null) {
+      await uploadFile(image);
+    }
     setState(() {
       if (image != null) {
           images.add(image);
@@ -215,11 +213,24 @@ class _HomePageState extends State<HomePage> {
 
   Future getImageFromCamera() async {
     var image = await ImagePicker.pickImage(source: ImageSource.camera);
-
+    if (image != null) {
+      await uploadFile(image);
+    }
     setState(() {
       if (image != null) {
         images.add(image);
       }
     });
   }
+
+
+  Future uploadFile(File image) async {
+    StorageReference storageReference = FirebaseStorage.instance
+        .ref()
+        .child('photos/${Path.basename(image.path)}');
+    StorageUploadTask uploadTask = storageReference.putFile(image);
+    await uploadTask.onComplete;
+    print('File Uploaded');
+  }
+
 }
