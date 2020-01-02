@@ -27,7 +27,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<File> images = new List<File>();
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,120 +44,133 @@ class _HomePageState extends State<HomePage> {
             Container(
               height: MediaQuery.of(context).size.height,
               width: double.infinity,
-              child: ListView.builder(
-                itemCount: (images.length / 3).ceil(),
-                itemBuilder: (context, i) {
-                  return Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Expanded(
-                          child: FlatButton(
-                            child: Container(
-                              decoration: new BoxDecoration(
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.8),
-                                    blurRadius:
-                                    20.0, // has the effect of softening the shadow
-                                    offset: Offset(
-                                      0, // horizontal, move right 10
-                                      5.0, // vertical, move down 10
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              child: images[i * 3] != null
-                                  ? Image(
-                                  image: Image.file(images[i * 3])
-                                      .image)
-                                  : Icon(Icons.image),
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ImagePage(
-                                        image:
-                                        Image.file(images[i * 3]))),
-                              );
-                            },
-                          ),
-                        ),
-                        images.length > i * 3 + 1
-                            ? Expanded(
-                          child: FlatButton(
-                            child: Container(
-                              decoration: new BoxDecoration(
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.8),
-                                    blurRadius:
-                                    20.0, // has the effect of softening the shadow
-                                    offset: Offset(
-                                      0, // horizontal, move right 10
-                                      5.0, // vertical, move down 10
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              child: images[i * 3 + 1] != null
-                                  ? Image(
-                                  image: Image.file(images[i * 3 + 1])
-                                      .image)
-                                  : Icon(Icons.image),
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ImagePage(
-                                        image:
-                                        Image.file(images[i * 3 + 1]))),
-                              );
-                            },
-                          ),
-                        )
-                            : SizedBox.shrink(),
-                        images.length > i * 3 + 2
-                            ? Expanded(
-                                child: FlatButton(
-                                  child: Container(
-                                    decoration: new BoxDecoration(
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey.withOpacity(0.8),
-                                          blurRadius:
-                                              20.0, // has the effect of softening the shadow
-                                          offset: Offset(
-                                            0, // horizontal, move right 10
-                                            5.0, // vertical, move down 10
+              child: FutureBuilder<List<String>>(
+                future: getUrls(), // async work
+                builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (!snapshot.hasError) {
+                      print('build');
+                      List<String> data = snapshot.data;
+                      return ListView.builder(
+                        itemCount: (data.length / 3).ceil(),
+                        itemBuilder: (context, i) {
+                          return Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                Expanded(
+                                  child: FlatButton(
+                                    child: Container(
+                                      decoration: new BoxDecoration(
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.8),
+                                            blurRadius:
+                                            20.0, // has the effect of softening the shadow
+                                            offset: Offset(
+                                              0, // horizontal, move right 10
+                                              5.0, // vertical, move down 10
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
+                                      child: data[i * 3] != null
+                                          ? Image(
+                                          image: Image.network(data[i * 3])
+                                              .image)
+                                          : Icon(Icons.image),
                                     ),
-                                    child: images[i * 3 + 2] != null
-                                        ? Image(
-                                            image: Image.file(images[i * 3 + 2])
-                                                .image)
-                                        : Icon(Icons.image),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => ImagePage(
+                                                image:
+                                                Image.network(data[i * 3]))),
+                                      );
+                                    },
                                   ),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => ImagePage(
-                                              image:
-                                                  Image.file(images[i * 3 + 2]))),
-                                    );
-                                  },
                                 ),
-                              )
-                            : SizedBox.shrink(),
-                      ],
-                    ),
-                  );
+                                data.length > i * 3 + 1
+                                    ? Expanded(
+                                  child: FlatButton(
+                                    child: Container(
+                                      decoration: new BoxDecoration(
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.8),
+                                            blurRadius:
+                                            20.0, // has the effect of softening the shadow
+                                            offset: Offset(
+                                              0, // horizontal, move right 10
+                                              5.0, // vertical, move down 10
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      child: data[i * 3 + 1] != null
+                                          ? Image(
+                                          image: Image.network(data[i * 3 + 1])
+                                              .image)
+                                          : Icon(Icons.image),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => ImagePage(
+                                                image:
+                                                Image.network(data[i * 3 + 1]))),
+                                      );
+                                    },
+                                  ),
+                                )
+                                    : SizedBox.shrink(),
+                                data.length > i * 3 + 2
+                                    ? Expanded(
+                                  child: FlatButton(
+                                    child: Container(
+                                      decoration: new BoxDecoration(
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.8),
+                                            blurRadius:
+                                            20.0, // has the effect of softening the shadow
+                                            offset: Offset(
+                                              0, // horizontal, move right 10
+                                              5.0, // vertical, move down 10
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      child: data[i * 3 + 2] != null
+                                          ? Image(
+                                          image: Image.network(data[i * 3 + 2])
+                                              .image)
+                                          : Icon(Icons.image),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => ImagePage(
+                                                image:
+                                                Image.network(data[i * 3 + 2]))),
+                                      );
+                                    },
+                                  ),
+                                )
+                                    : SizedBox.shrink(),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    }
+                    else return Center(child:CircularProgressIndicator());
+                  }
+                  else return Center(child:CircularProgressIndicator());
                 },
               ),
             ),
@@ -231,6 +244,23 @@ class _HomePageState extends State<HomePage> {
     StorageUploadTask uploadTask = storageReference.putFile(image);
     await uploadTask.onComplete;
     print('File Uploaded');
+  }
+
+  Future<List<String>> getUrls() async
+  {
+    print("gettingURLS");
+    List<String> urls = new List<String>();
+    StorageReference storageReference = FirebaseStorage.instance
+        .ref()
+        .child('photos/');
+    var result = await storageReference.listAll();
+    Iterator it = result['items'].keys.iterator;
+    while (it.moveNext()) {
+      String url = await FirebaseStorage.instance.ref().child('photos/').child(it.current.toString()).getDownloadURL();
+      urls.add(url);
+      print(url);
+    }
+    return urls;
   }
 
 }
